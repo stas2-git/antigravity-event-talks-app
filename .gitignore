@@ -29,3 +29,9 @@ bigquery-release-viewer/feed_cache.json
 .idea/
 .DS_Store
 Thumbs.db
+
+# Cloned skills repository
+antigravity-skills/
+
+# Local test directories
+git_test/
