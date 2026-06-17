@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Explorer - Live Feed & Updates</title>
+    <meta name="description" content="Stay up to date with Google Cloud BigQuery release notes. Filter, search, and tweet specific features, improvements, fixes, and updates instantly.">
+    <meta name="keywords" content="BigQuery, Google Cloud, Release Notes, Database, Data Warehouse, Cloud computing">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    <link rel="icon" type="image/png" href="https://www.gstatic.com/images/branding/product/1x/bigquery_64dp.png">
+</head>
+<body>
+    <div class="glass-bg-decorations">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Main Sidebar / Header Panel -->
+        <header class="app-header">
+            <div class="brand-section">
+                <div class="logo-wrapper">
+                    <img src="https://www.gstatic.com/images/branding/product/2x/bigquery_64dp.png" alt="BigQuery Logo" class="brand-logo">
+                </div>
+                <div class="brand-info">
+                    <h1>BigQuery</h1>
+                    <span class="sub-title">Release Notes Explorer</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Quick Stats -->
+            <div class="stats-panel" id="stats-panel">
+                <div class="stat-card" data-filter="all">
+                    <span class="stat-label">Total Updates</span>
+                    <span class="stat-value" id="stat-total">--</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item" data-filter="Feature">
+                        <span class="dot dot-feature"></span>
+                        <span class="stat-name">Features</span>
+                        <span class="stat-num" id="stat-feature">0</span>
+                    </div>
+                    <div class="stat-item" data-filter="Breaking">
+                        <span class="dot dot-breaking"></span>
+                        <span class="stat-name">Breaking</span>
+                        <span class="stat-num" id="stat-breaking">0</span>
+                    </div>
+                    <div class="stat-item" data-filter="Change">
+                        <span class="dot dot-change"></span>
+                        <span class="stat-name">Changes</span>
+                        <span class="stat-num" id="stat-change">0</span>
+                    </div>
+                    <div class="stat-item" data-filter="Issue">
+                        <span class="dot dot-issue"></span>
+                        <span class="stat-name">Issues</span>
+                        <span class="stat-num" id="stat-issue">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help / Footer text -->
+            <div class="header-footer">
+                <p>Data loaded live from Google Cloud feeds. Click any update card to highlight, tweet, or copy its details.</p>
+                <div class="source-link-wrapper">
+                    <a href="https://docs.cloud.google.com/feeds/bigquery-release-notes.xml" target="_blank" rel="noopener noreferrer" class="source-link">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        Original XML Feed
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Filter & Search Controls bar -->
+            <section class="controls-bar" aria-label="Filters and Search Controls">
+                <div class="search-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="text" id="search-input" placeholder="Search release notes (e.g. Gemini, SQL, billing)..." aria-label="Search release notes">
+                    <button id="clear-search-btn" class="clear-search-btn" aria-label="Clear search" style="display: none;">&times;</button>
+                </div>
+
+                <div class="action-buttons-group">
+                    <!-- Category Select Dropdown for Mobile / Compact -->
+                    <div class="category-dropdown-wrapper">
+                        <select id="mobile-category-filter" aria-label="Filter by category">
+                            <option value="all">All Categories</option>
+                            <option value="Feature">Features</option>
+                            <option value="Breaking">Breaking Changes</option>
+                            <option value="Change">Changes</option>
+                            <option value="Issue">Issues</option>
+                            <option value="Announcement">Announcements</option>
+                        </select>
+                    </div>
+
+                    <!-- Category Buttons for Desktop -->
+                    <div class="category-filters" id="category-filters" role="group" aria-label="Filter updates by type">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="Feature">Features</button>
+                        <button class="filter-btn" data-filter="Breaking">Breaking</button>
+                        <button class="filter-btn" data-filter="Change">Changes</button>
+                        <button class="filter-btn" data-filter="Issue">Issues</button>
+                        <button class="filter-btn" data-filter="Announcement">Announcements</button>
+                    </div>
+
+                    <!-- Refresh Button -->
+                    <button id="refresh-btn" class="refresh-btn" aria-label="Refresh release notes" title="Refresh Feed">
+                        <svg class="refresh-icon" id="refresh-icon" viewBox="0 0 24 24">
+                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                        </svg>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Active Filters Info -->
+            <div class="active-filters-info" id="active-filters-info" style="display: none;">
+                <span class="info-text">Showing <strong id="filtered-count">0</strong> updates matching your filters.</span>
+                <button id="reset-filters-btn" class="reset-link-btn">Reset all filters</button>
+            </div>
+
+            <!-- Release Notes List Container -->
+            <section class="releases-container" id="releases-container" aria-live="polite">
+                <!-- Skeleton loader placeholders -->
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-notification" class="toast" role="alert" aria-live="assertive"></div>
+
+    <!-- Tweet Customization Modal -->
+    <div id="tweet-modal" class="modal-overlay" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-labelledby="modal-title">
+            <div class="modal-header">
+                <h2 id="modal-title">Draft Tweet</h2>
+                <button id="close-modal-btn" class="close-modal-btn" aria-label="Close dialog">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-instruction">Customize your message before sharing. Remember Twitter's 280 character limit!</p>
+                <div class="textarea-wrapper">
+                    <textarea id="tweet-textarea" rows="5" maxlength="280"></textarea>
+                    <div class="char-count-wrapper">
+                        <span id="char-counter">0 / 280</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-tweet-btn" class="btn btn-secondary">Cancel</button>
+                <button id="submit-tweet-btn" class="btn btn-primary">
+                    <svg class="x-logo" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    Post on X / Twitter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

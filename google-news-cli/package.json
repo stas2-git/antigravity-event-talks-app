@@ -1,0 +1,14 @@
+{
+  "name": "google-news-cli",
+  "version": "1.0.0",
+  "description": "A command-line tool to read the latest news from Google",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "google-news": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {}
+}
