@@ -33,5 +33,8 @@ Thumbs.db
 # Cloned skills repository
 antigravity-skills/
 
+# Cloned external repositories
+cloned-repos/
+
 # Local test directories
 git_test/
