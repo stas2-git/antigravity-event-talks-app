@@ -158,6 +158,32 @@ function setupEventListeners() {
             showToast("Opening Twitter / X share intent...");
         }
     });
+
+    // Theme Switch toggle
+    const themeCheckbox = document.getElementById('theme-checkbox');
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeCheckbox.checked = true;
+    }
+    
+    themeCheckbox.addEventListener('change', () => {
+        if (themeCheckbox.checked) {
+            document.body.classList.add('light-theme');
+            localStorage.setItem('theme', 'light');
+            showToast("Switched to Light Theme");
+        } else {
+            document.body.classList.remove('light-theme');
+            localStorage.setItem('theme', 'dark');
+            showToast("Switched to Dark Theme");
+        }
+    });
+
+    // Export CSV Button Click
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    exportCsvBtn.addEventListener('click', () => {
+        exportToCSV();
+    });
 }
 
 // Add polyfill/helper for older browsers/environments just in case
@@ -459,4 +485,55 @@ function showTweetModal(item) {
 function hideTweetModal() {
     tweetModal.classList.remove('show');
     tweetModal.setAttribute('aria-hidden', 'true');
+}
+
+// Export currently filtered releases to a CSV file
+function exportToCSV() {
+    if (filteredReleases.length === 0) {
+        showToast("No release notes found to export.");
+        return;
+    }
+    
+    // CSV Header
+    const headers = ["ID", "Date", "Type", "Link", "Content Plaintext"];
+    
+    // Construct CSV rows
+    const csvRows = [
+        headers.join(',')
+    ];
+    
+    filteredReleases.forEach(item => {
+        const formatField = (val) => {
+            if (val === null || val === undefined) return '""';
+            const str = String(val).replace(/"/g, '""');
+            return `"${str}"`;
+        };
+        
+        const row = [
+            formatField(item.id),
+            formatField(item.date),
+            formatField(item.type),
+            formatField(item.link),
+            formatField(item.text)
+        ];
+        
+        csvRows.push(row.join(','));
+    });
+    
+    // Generate download
+    const csvContent = "\uFEFF" + csvRows.join("\n"); // Add UTF-8 BOM
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    const timestamp = new Date().toISOString().slice(0, 10);
+    link.setAttribute("download", `bigquery_release_notes_${timestamp}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast(`Exported ${filteredReleases.length} updates to CSV!`);
 }

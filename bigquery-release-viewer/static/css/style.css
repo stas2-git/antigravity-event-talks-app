@@ -970,3 +970,182 @@ body {
         flex-shrink: 0;
     }
 }
+
+/* Theme Toggle Styling */
+.theme-toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
+}
+
+.theme-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.theme-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* Toggle Switch Control */
+.switch-control {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+}
+
+.switch-control input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.06);
+    transition: .3s;
+    border-radius: 34px;
+    border: 1px solid var(--border-color);
+}
+
+.switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-secondary);
+    transition: .3s;
+    border-radius: 50%;
+}
+
+.switch-control input:checked + .switch-slider {
+    background-color: var(--accent-blue);
+}
+
+.switch-control input:checked + .switch-slider:before {
+    transform: translateX(22px);
+    background-color: #080d1a;
+}
+
+/* Light Theme Variables Overrides */
+body.light-theme {
+    --bg-primary: #f8fafc;
+    --bg-secondary: rgba(241, 245, 249, 0.85);
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --bg-card-hover: rgba(255, 255, 255, 0.95);
+    --border-color: rgba(15, 23, 42, 0.08);
+    --border-color-hover: rgba(56, 189, 248, 0.5);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    
+    --accent-blue: #0284c7;
+    --accent-blue-rgb: 2, 132, 199;
+    --accent-purple: #9333ea;
+    --accent-indigo: #4f46e5;
+    
+    --color-feature-bg: rgba(16, 185, 129, 0.08);
+    --color-breaking-bg: rgba(239, 68, 68, 0.08);
+    --color-change-bg: rgba(59, 130, 246, 0.08);
+    --color-issue-bg: rgba(245, 158, 11, 0.08);
+    --color-announcement-bg: rgba(139, 92, 246, 0.08);
+}
+
+body.light-theme .theme-toggle-container {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme .switch-slider {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .switch-slider:before {
+    background-color: var(--text-secondary);
+}
+
+body.light-theme .logo-wrapper {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .brand-info h1 {
+    background: linear-gradient(135deg, #0f172a 30%, var(--accent-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-theme .card-content {
+    color: #334155;
+}
+
+body.light-theme .card-content code {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .glow-orb {
+    opacity: 0.05;
+}
+
+body.light-theme .stat-card,
+body.light-theme .stat-item,
+body.light-theme .category-filters,
+body.light-theme .refresh-btn,
+body.light-theme #search-input,
+body.light-theme .card-action-btn {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+body.light-theme #search-input {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+body.light-theme .modal-card {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .textarea-wrapper {
+    background: #f8fafc;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .btn-secondary {
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .btn-primary {
+    background: var(--text-primary);
+    border-color: var(--text-primary);
+    color: #ffffff;
+}
+
+body.light-theme .btn-primary:hover {
+    background: transparent;
+    color: var(--text-primary);
+}
+
+body.light-theme .close-modal-btn {
+    color: var(--text-secondary);
+}
