@@ -1153,3 +1153,78 @@ body.light-theme .btn-primary:hover {
 body.light-theme .close-modal-btn {
     color: var(--text-secondary);
 }
+
+/* Scroll to Top Button Styling */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: opacity var(--transition-fast), transform var(--transition-fast), background-color var(--transition-fast);
+    z-index: 90;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+}
+
+.scroll-top-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.scroll-top-btn:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-color-hover);
+    color: var(--text-primary);
+}
+
+.scroll-top-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+/* Read / Unread Card States */
+.release-card.read {
+    opacity: 0.5;
+}
+
+.release-card.read:hover {
+    opacity: 0.85;
+}
+
+.card-action-btn.btn-read.is-read {
+    color: var(--accent-blue);
+    background: rgba(56, 189, 248, 0.08);
+    border-color: rgba(56, 189, 248, 0.2);
+}
+
+body.light-theme .card-action-btn.btn-read.is-read {
+    color: #0369a1;
+    background: rgba(3, 105, 161, 0.08);
+    border-color: rgba(3, 105, 161, 0.15);
+}
+
+/* Search Highlights */
+mark {
+    background: rgba(245, 158, 11, 0.25);
+    color: #ffffff;
+    border-radius: 2px;
+    padding: 0 0.15rem;
+}
+
+body.light-theme mark {
+    background: rgba(245, 158, 11, 0.3);
+    color: #000000;
+}

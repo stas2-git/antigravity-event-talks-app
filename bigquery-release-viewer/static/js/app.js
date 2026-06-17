@@ -4,6 +4,7 @@ let filteredReleases = [];
 let activeCategory = 'all';
 let searchText = '';
 let selectedReleaseId = null;
+let readReleases = new Set(JSON.parse(localStorage.getItem('readReleases') || '[]'));
 
 // DOM Elements
 const searchInput = document.getElementById('search-input');
@@ -136,22 +137,28 @@ function setupEventListeners() {
         }
     });
 
-    // Textarea character limit dynamic display
+    // Textarea character limit dynamic display and button disabling
     tweetTextarea.addEventListener('input', () => {
         const len = tweetTextarea.value.length;
         charCounter.textContent = `${len} / 280`;
         
-        if (len >= 260) {
+        if (len > 280) {
             charCounter.parentElement.classList.add('warning');
+            submitTweetBtn.disabled = true;
+            submitTweetBtn.style.opacity = '0.5';
+            submitTweetBtn.style.cursor = 'not-allowed';
         } else {
             charCounter.parentElement.classList.remove('warning');
+            submitTweetBtn.disabled = false;
+            submitTweetBtn.style.opacity = '1';
+            submitTweetBtn.style.cursor = 'pointer';
         }
     });
 
     // Modal Submit Tweet Button
     submitTweetBtn.addEventListener('click', () => {
         const text = tweetTextarea.value.trim();
-        if (text.length > 0) {
+        if (text.length > 0 && text.length <= 280) {
             const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
             window.open(tweetUrl, '_blank', 'noopener,noreferrer');
             hideTweetModal();
@@ -183,6 +190,26 @@ function setupEventListeners() {
     const exportCsvBtn = document.getElementById('export-csv-btn');
     exportCsvBtn.addEventListener('click', () => {
         exportToCSV();
+    });
+
+    // Scroll to Top Button Action
+    const scrollTopBtn = document.getElementById('scroll-top-btn');
+    const appMain = document.querySelector('.app-main');
+    
+    const handleScroll = (element) => {
+        if (element.scrollTop > 300) {
+            scrollTopBtn.classList.add('show');
+        } else {
+            scrollTopBtn.classList.remove('show');
+        }
+    };
+    
+    appMain.addEventListener('scroll', () => handleScroll(appMain));
+    window.addEventListener('scroll', () => handleScroll(document.documentElement));
+    
+    scrollTopBtn.addEventListener('click', () => {
+        appMain.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
@@ -343,11 +370,24 @@ function renderReleases() {
 
     filteredReleases.forEach(item => {
         const card = document.createElement('article');
-        card.className = `release-card ${selectedReleaseId === item.id ? 'selected' : ''}`;
+        const isRead = readReleases.has(item.id);
+        card.className = `release-card ${selectedReleaseId === item.id ? 'selected' : ''} ${isRead ? 'read' : ''}`;
         card.setAttribute('data-id', item.id);
         
         // Apply category class to badge
         const badgeClass = `badge badge-${item.type.toLowerCase()}`;
+        
+        // Highlight searched text inside HTML tags context safely
+        let displayContent = item.content;
+        if (searchText) {
+            try {
+                const escapedSearch = escapeRegExp(searchText);
+                const regex = new RegExp(`(${escapedSearch})(?![^<>]*>)`, 'gi');
+                displayContent = displayContent.replace(regex, '<mark>$1</mark>');
+            } catch (e) {
+                console.error("Highlighting regex error:", e);
+            }
+        }
         
         card.innerHTML = `
             <div class="card-header">
@@ -360,9 +400,13 @@ function renderReleases() {
                 </a>
             </div>
             <div class="card-content">
-                ${item.content}
+                ${displayContent}
             </div>
             <div class="card-footer">
+                <button class="card-action-btn btn-read ${isRead ? 'is-read' : ''}" title="${isRead ? 'Mark as Unread' : 'Mark as Read'}">
+                    <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    <span>${isRead ? 'Read' : 'Mark Read'}</span>
+                </button>
                 <button class="card-action-btn btn-copy" title="Copy text to clipboard">
                     <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                     Copy
@@ -386,6 +430,13 @@ function renderReleases() {
                 card.classList.add('selected');
                 selectedReleaseId = item.id;
             }
+        });
+
+        // Read/Unread Toggle Event
+        const readBtn = card.querySelector('.btn-read');
+        readBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Avoid selecting card
+            toggleReadStatus(item.id, card, readBtn);
         });
 
         // Copy Button Event
@@ -536,4 +587,29 @@ function exportToCSV() {
     document.body.removeChild(link);
     
     showToast(`Exported ${filteredReleases.length} updates to CSV!`);
+}
+
+// Regex escape helper function
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Toggle Read/Unread card state helper
+function toggleReadStatus(id, cardElement, buttonElement) {
+    if (readReleases.has(id)) {
+        readReleases.delete(id);
+        cardElement.classList.remove('read');
+        buttonElement.classList.remove('is-read');
+        buttonElement.querySelector('span').textContent = 'Mark Read';
+        buttonElement.setAttribute('title', 'Mark as Read');
+        showToast("Marked as Unread");
+    } else {
+        readReleases.add(id);
+        cardElement.classList.add('read');
+        buttonElement.classList.add('is-read');
+        buttonElement.querySelector('span').textContent = 'Read';
+        buttonElement.setAttribute('title', 'Mark as Unread');
+        showToast("Marked as Read");
+    }
+    localStorage.setItem('readReleases', JSON.stringify(Array.from(readReleases)));
 }
