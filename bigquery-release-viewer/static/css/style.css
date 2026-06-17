@@ -152,7 +152,9 @@ body {
     font-weight: 700;
     letter-spacing: -0.02em;
     background: linear-gradient(135deg, #fff 30%, var(--accent-blue) 100%);
+    background-clip: text;
     -webkit-background-clip: text;
+    color: transparent;
     -webkit-text-fill-color: transparent;
 }
 
@@ -1091,7 +1093,9 @@ body.light-theme .logo-wrapper {
 
 body.light-theme .brand-info h1 {
     background: linear-gradient(135deg, #0f172a 30%, var(--accent-blue) 100%);
+    background-clip: text;
     -webkit-background-clip: text;
+    color: transparent;
     -webkit-text-fill-color: transparent;
 }
 
