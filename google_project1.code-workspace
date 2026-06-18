@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../../../.gemini"
+		},
+		{
+			"path": "../../../.agents"
 		}
 	],
 	"settings": {}
